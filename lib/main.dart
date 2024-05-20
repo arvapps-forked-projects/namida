@@ -150,7 +150,7 @@ void mainInitialization() async {
 
   FlutterNativeSplash.remove();
 
-  HistoryController.inst.prepareHistoryFile();
+  HistoryController.inst.prepareHistoryFile().then((_) => Indexer.inst.sortMediaTracksSubListsAfterHistoryPrepared());
   YoutubeHistoryController.inst.prepareHistoryFile();
   await Future.wait([
     PlaylistController.inst.prepareDefaultPlaylistsFile(),
@@ -457,16 +457,8 @@ class Namida extends StatelessWidget {
                           final useDarkTheme = mode == ThemeMode.dark || (mode == ThemeMode.system && MediaQuery.platformBrightnessOf(context) == Brightness.dark);
                           final isLight = !useDarkTheme;
                           final theme = AppThemes.inst.getAppTheme(CurrentColor.inst.currentColorScheme, isLight);
-                          SystemChrome.setSystemUIOverlayStyle(
-                            SystemUiOverlayStyle(
-                              systemNavigationBarContrastEnforced: false,
-                              systemNavigationBarColor: const Color(0x00000000),
-                              systemNavigationBarDividerColor: const Color(0x00000000),
-                              systemNavigationBarIconBrightness: isLight ? Brightness.dark : Brightness.light,
-                            ),
-                          );
-                          return AnimatedTheme(
-                            duration: const Duration(milliseconds: kThemeAnimationDurationMS),
+                          NamidaNavigator.inst.setSystemUIOverlayStyleCustom(isLight);
+                          return Theme(
                             data: theme,
                             child: widget!,
                           );
